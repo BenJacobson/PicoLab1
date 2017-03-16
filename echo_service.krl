@@ -1,27 +1,27 @@
-ruleset {
-	meta {
-		name "Hello World"
-    	author "Ben Jacobson"
-    	logging on
-    	shares hello, message
-	}
+ruleset echo_service {
+  meta {
+    name "Hello World"
+    author "Ben Jacobson"
+    logging on
+    shares hello, message
+  }
 
-	global {
+  global {
 
-	}
+  }
 
-	rule {
-		select when echo hello
-		send_directive("say") with
-			something = "Hello World"
-	}
+  rule hello {
+    select when echo hello
+    send_directive("say") with
+    something = "Hello World"
+  }
 
-	rule {
-		select when echo message
-		pre{
-			input = event:attr("input")
-		}
-		send_directive("say") with
-			something = input
-	}
+  rule message {
+    select when echo message
+    pre {
+      input = event:attr("input")
+    }
+    send_directive("say") with
+    something = input
+  }
 }
