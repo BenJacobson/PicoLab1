@@ -3,7 +3,7 @@ ruleset {
 		name "Hello World"
     	author "Ben Jacobson"
     	logging on
-    	shares ___
+    	shares hello, message
 	}
 
 	global {
