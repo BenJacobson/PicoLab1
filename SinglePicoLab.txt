@@ -36,4 +36,10 @@ Part 2
 
 	Questions
 		1. I observed that the pico responded to the event. The domain and type of the event that I sent matched the new rule I registered, so that rule was run and the directive returned.
-		2. 
+		2. I would say that the new rule is an event filter which could be considered an event intermediary. It only propagates the event on the condition that the mileage is high enough. The event does not take any action itself besides filtering.
+		3. The log shows "eci: 'cj0bt4qbw0001hguz9uvj43zd' } rule selected: track_trips_2 -> count_long_trips". This shows that the count_long_trips rule executed which means it is working.
+		4. I would keep track of the average_trip_length and then make long_trip anything 50% greater than the average_trip_length.
+
+Part 3
+
+	
