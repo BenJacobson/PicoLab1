@@ -1,0 +1,27 @@
+Ben Jacobson
+CS 462, Single Pico Lab
+March 18, 2017
+
+Part 1
+
+	RuleSets
+		1. https://raw.githubusercontent.com/BenJacobson/PicoLab1/master/hello_world.krl
+		2. https://raw.githubusercontent.com/BenJacobson/PicoLab1/master/echo_service.krl
+		3. https://raw.githubusercontent.com/BenJacobson/PicoLab1/master/track_trips.krl
+
+	RIDs
+		1. hello_world
+		2. echo_service
+		3. track_trips
+
+	ECI
+		cj0bt4qbw0001hguz9uvj43zd
+
+	Questions
+		1. I parsed the rulesets with krl-compiler on the command line.
+		2. {"directives":[{"options":{"something":"hi"},"name":"say","meta":{"rid":"echo_service","rule_name":"message","txn_id":"TODO","eid":"1556"}}]} One directive was returned. I think only this one rule ran.
+		3. {"directives":[{"options":{"something":"hi"},"name":"say","meta":{"rid":"echo_service","rule_name":"message","txn_id":"TODO","eid":"1556"}},{"options":{"trip_length":"100"},"name":"trip","meta":{"rid":"track_trips","rule_name":"process_trip","txn_id":"TODO","eid":"1556"}}]} Two directives were returned. I think just the two rules ran.
+		4. When the event comes into the pico, each ruleset must be searched to see if it has a domain the matches the event domain. Then each matching domian probably must be searched for a matching event type. Each type match that is found must be checked to see if it is shared and shared events will then be run to create directives.
+
+Part 2
+
