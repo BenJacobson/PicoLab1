@@ -19,8 +19,7 @@ ruleset track_trips_2 {
       trip_length = mileage
     fired {
       raise explicit event "trip_processed"
-        attributes event:attrs();
-      raise explicit event "found_long_trip"
+        attributes event:attrs()
     }
   }
 
@@ -30,13 +29,9 @@ ruleset track_trips_2 {
       mileage = event:attr("mileage")
     }
     fired {
-      last if mileage < long_trip
+      raise explicit event "found_long_trip"
+        attributes event:attrs()
+        if (mileage >= long_trip)
     }
-  }
-
-  rule count_long_trips {
-    select when explicit found_long_trip
-    send_directive("long trips") with
-      count = 1
   }
 }

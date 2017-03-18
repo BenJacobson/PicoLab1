@@ -25,13 +25,14 @@ ruleset trip_store {
 
   rule collect_trips {
     select when explicit trip_processed
-    pre {
-      mileage = event:attr("mileage").defaultsTo(0)
-    }
-    send_directive("test") with
-      trip_lengths = ent:trips
     always {
-      ent:trips{[time:now()]} := mileage
+      ent:trips{[time:now()]} := event:attr("mileage").defaultsTo(0).as("Number")
     }
+  }
+
+  rule collect_long_trips {
+    select when explicit found_long_trip
+    send_directive("long_trip") with
+      message = "found long trip"
   }
 }
