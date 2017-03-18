@@ -13,10 +13,7 @@ ruleset trip_store {
         "type": "ent"
       }]
     }
-    init_trips = [0]
-    add_trip = function(mileage) {
-      ent:trips.append(mileage);
-    }
+    init_trips = {}
   }
 
   rule init_ent {
@@ -29,10 +26,12 @@ ruleset trip_store {
   rule collect_trips {
     select when explicit trip_processed
     pre {
-      mileage = event:attr("mileage")
+      mileage = event:attr("mileage").defaultsTo(0)
     }
-    ent:trips.append(mileage)
     send_directive("test") with
       trip_lengths = ent:trips
+    always {
+      ent:trips{[time:now()]} := mileage
+    }
   }
 }
