@@ -26,11 +26,12 @@ ruleset track_trips_2 {
   rule find_long_trips {
     select when explicit trip_processed
     pre {
-      mileage = event:attr("mileage")
+      mileage = event:attr("mileage").defaultsTo(0).as("Number")
+      time = time:now()
     }
     fired {
       raise explicit event "found_long_trip"
-        attributes event:attrs()
+        attributes event:attrs().put({"time":time:now()})
         if (mileage >= long_trip)
     }
   }

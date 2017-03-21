@@ -40,14 +40,14 @@ ruleset trip_store {
   rule collect_trips {
     select when explicit trip_processed
     always {
-      ent:trips{[time:now()]} := event:attr("mileage").defaultsTo(0).as("Number")
+      ent:trips{[event:attr("time")]} := event:attr("mileage").defaultsTo(0).as("Number")
     }
   }
 
   rule collect_long_trips {
     select when explicit found_long_trip
     always {
-      ent:long_trips{[time:now()]} := event:attr("mileage").defaultsTo(0).as("Number")
+      ent:trips{[event:attr("time")]} := event:attr("mileage").defaultsTo(0).as("Number")
     }
   }
 }
