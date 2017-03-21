@@ -15,8 +15,8 @@ ruleset trip_store {
       }]
     }
 
-    init_trips = {}
-    init_long_trips = {}
+    init_trips = []
+    init_long_trips = []
 
     trips = function() {
       ent:trips
@@ -25,7 +25,7 @@ ruleset trip_store {
       ent:long_trips
     }
     short_trips = function() {
-      ent:trips.filter(function(k, v) {v < 10})
+      ent:trips.filter(function(k, v) {v[0] < 10})
     }
   }
 
@@ -39,15 +39,23 @@ ruleset trip_store {
 
   rule collect_trips {
     select when explicit trip_processed
+    pre {
+      mileage = event:attr("mileage")
+      time = event:attr("time")
+    }
     always {
-      ent:trips{[event:attr("time")]} := event:attr("mileage").defaultsTo(0).as("Number")
+      ent:trips := ent:trips.append([[mileage, time]])
     }
   }
 
   rule collect_long_trips {
     select when explicit found_long_trip
+    pre {
+      mileage = event:attr("mileage")
+      time = event:attr("time")
+    }
     always {
-      ent:trips{[event:attr("time")]} := event:attr("mileage").defaultsTo(0).as("Number")
+      ent:long_trips := ent:long_trips.append([[mileage, time]])
     }
   }
 }

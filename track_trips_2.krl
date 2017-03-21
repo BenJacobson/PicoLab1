@@ -14,12 +14,14 @@ ruleset track_trips_2 {
     select when car new_trip
     pre {
       mileage = event:attr("mileage")
+      timestamp = time:now()
+      new_attrs = event:attrs().put({"time": timestamp})
     }
     send_directive("trip") with
-      trip_length = mileage
+      trip_length = new_attrs
     fired {
       raise explicit event "trip_processed"
-        attributes event:attrs()
+        attributes new_attrs
     }
   }
 
@@ -27,11 +29,10 @@ ruleset track_trips_2 {
     select when explicit trip_processed
     pre {
       mileage = event:attr("mileage").defaultsTo(0).as("Number")
-      time = time:now()
     }
     fired {
       raise explicit event "found_long_trip"
-        attributes event:attrs().put({"time":time:now()})
+        attributes event:attrs()
         if (mileage >= long_trip)
     }
   }
