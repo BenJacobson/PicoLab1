@@ -6,6 +6,15 @@ ruleset manage_fleet {
     shares create_vehicle
   }
 
+  global {
+    __testing = {
+      "events": [{
+        "domain": "car",
+        "type": "new_vehicle"
+      }]
+    }
+  }
+
   rule create_vehicle {
     select when car new_vehicle
     pre {
@@ -16,8 +25,8 @@ ruleset manage_fleet {
         .put(["owner"], owner)
         .put(["Prototype_rids"], "b507780x54.prod, b507780x56.prod") // Installs rule sets b507780x54.prod and b507780x56.prod in the newly created Pico
     }
-      event:send({"cid":meta:eci()}, "wrangler", "child_creation") with attrs = attributes.klog("attributes: ")
-      send_directive("Item created") with attributes = attributes
+    event:send({"cid":meta:eci()}, "wrangler", "child_creation") with attrs = attributes.klog("attributes: ")
+    send_directive("Item created") with attributes = attributes
     always {
       log("Create child item for " + child)
     }
