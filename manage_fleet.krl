@@ -3,7 +3,7 @@ ruleset manage_fleet {
     name "Manage Fleet"
     author "Ben Jacobson"
     logging on
-    shares create_vehicle
+    shares __testing, create_vehicle
   }
 
   global {
@@ -18,14 +18,14 @@ ruleset manage_fleet {
   rule create_vehicle {
     select when car new_vehicle
     pre {
-      name = event:attr("name")
-      owner = event:attr("owner")
-      attributes = {}
-        .put(["name"], name)
-        .put(["owner"], owner)
-        .put(["Prototype_rids"], "b507780x54.prod, b507780x56.prod") // Installs rule sets b507780x54.prod and b507780x56.prod in the newly created Pico
+      // name = event:attr("name")
+      // owner = event:attr("owner")
+      // attributes = {}
+        // .put(["name"], name)
+        // .put(["owner"], owner)
+        // .put(["Prototype_rids"], "b507780x54.prod, b507780x56.prod") // Installs rule sets b507780x54.prod and b507780x56.prod in the newly created Pico
     }
-    event:send({"cid":meta:eci()}, "wrangler", "child_creation") with attrs = attributes.klog("attributes: ")
+    event:send({"cid":meta:eci()}, "wrangler", "child_creation") // with attrs = attributes.klog("attributes: ")
     send_directive("Item created") with attributes = attributes
     always {
       log("Create child item for " + child)
