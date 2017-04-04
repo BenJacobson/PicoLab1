@@ -2,6 +2,7 @@ ruleset manage_fleet {
   meta {
     name "Manage Fleet"
     author "Ben Jacobson"
+    use module io.picolabs.pico alias wrangler
     logging on
     shares __testing, create_vehicle
   }
@@ -32,14 +33,14 @@ ruleset manage_fleet {
       })
     }
 
-    subscribe = function(my_eci, subscriber_eci) {
+    subscribe = function(subscriber_name, subscriber_eci) {
       event:send({
-        "eci": my_eci,
+        "eci": meta:eci,
         "eid": "subscription",
         "domain": "wrangler",
         "type": "subscription",
         "attrs": {
-          "name": "vehicle",
+          "name": subscriber_name,
           "name_space": "fleet",
           "my_role": "fleet",
           "subscriber_role": "vehicle",
@@ -54,7 +55,7 @@ ruleset manage_fleet {
     select when reset sections
     send_directive("sections reset")
     always {
-      ent:sections := []
+      ent:sections := {}
     }
   }
 
@@ -63,14 +64,12 @@ ruleset manage_fleet {
     pre {
       name = event:attr("name")
       exists = ent:sections >< name
-      eci = meta:eci
     }
     if name.isnull() || exists then
       send_directive("section_not_created")
         with name = name
     fired {
     } else {
-      ent:sections := ent:sections.defaultsTo([]).union([name]);
       raise pico event "new_child_request"
         attributes { "dname": name, "color": "#FF69B4" }
     }
@@ -80,14 +79,37 @@ ruleset manage_fleet {
   rule pico_child_initialized {
     select when pico child_initialized
     pre {
-      new_child_eci = event:attrs(){["new_child", "eci"]}
+      new_child = event:attr("new_child")
+      new_child_name = event:attr("rs_attrs"){"dname"}
+      new_child_eci = new_child{"eci"}
     }
     installRule(new_child_eci, "Subscriptions")
     installRule(new_child_eci, "trip_store")
     installRule(new_child_eci, "track_trips")
-    subscribe(meta:eci, new_child_eci)
+    subscribe(new_child_name, new_child_eci)
     always {
+      ent:sections{new_child_name} := new_child;
       ent:child_attrs := event:attrs()
     }
   }
+
+  rule delete_child {
+    select when delete child
+    pre {
+      name = event:attr("name")
+      exists = ent:sections >< name
+      child_to_delete = ent:sections{name}
+    }
+    if exists then
+      send_directive("delete child")
+        with name = name
+    fired {
+      raise pico event "delete_child_request"
+        attributes child_to_delete;
+      ent:sections{name} := null
+    }
+  }
 }
+
+// http://localhost:8080/sky/event/cj12iw94g00012suzycu2vzsv/delete-child/pico/delete_child_request?id=cj12xcjo7001gocuz5s3d3qxh&eci=cj12xcjo8001hocuz7b500owk
+// http://localhost:8080/api/pico/cj12iw94c00002suzmdasp0hk/rm-channel/cj12xvxsq001kocuzmebiwcnb
